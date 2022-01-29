@@ -81,4 +81,27 @@ class Auth extends RestController
             ], 400);
         }
     }
+
+    public function validate_post()
+    {
+        $headers = $this->input->request_headers();
+
+        if (!array_key_exists('Authorization', $headers) && empty($headers['Authorization'])) {
+            $this->response("Unauthorised", 401);
+        }
+
+        try {
+            // Men-decode token. Dalam library ini juga sudah sekaligus memverfikasinya
+            $decodedToken = JWT::decode($headers['Authorization'], new Key($this->_KEY, 'HS256'));
+            $decoded_array = (array) $decodedToken;
+
+            // Data yang akan dikirim jika token valid
+            $this->response($decoded_array, 200);
+        } catch (Exception $e) {
+            // Bagian ini akan jalan jika terdapat error saat JWT diverifikasi atau di-decode
+            $this->response("Unauthorised", 401);
+
+            exit();
+        }
+    }
 }

@@ -1,7 +1,11 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+class Welcome extends CI_Controller
+{
 
 	/**
 	 * Index Page for this controller.
@@ -20,6 +24,24 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		$key = "example_key";
+		$ksey = "example_skey";
+		$payload = array(
+			"iss" => "http://example.org",
+			"aud" => "http://example.com",
+			"iat" => 1356999524,
+			"nbf" => 1357000000
+		);
+
+		/**
+		 * IMPORTANT:
+		 * You must specify supported algorithms for your application. See
+		 * https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40
+		 * for a list of spec-compliant algorithms.
+		 */
+		$jwt = JWT::encode($payload, $key, 'HS256');
+		$decoded = JWT::decode($jwt, new Key($ksey, 'HS256'));
+
+		print_r($decoded);
 	}
 }
